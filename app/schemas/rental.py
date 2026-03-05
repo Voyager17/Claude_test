@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 from pydantic import BaseModel, Field
 
@@ -6,6 +7,14 @@ class RentalCreate(BaseModel):
     customer_id: int
     movie_id: int
     rental_days: int = Field(ge=1, default=1)
+
+    @classmethod
+    def rand_init(cls, customer_id: int, movie_id: int) -> "RentalCreate":
+        return cls(
+            customer_id=customer_id,
+            movie_id=movie_id,
+            rental_days=random.randint(1, 14),
+        )
 
 
 class RentalRead(BaseModel):

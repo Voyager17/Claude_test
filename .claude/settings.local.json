@@ -5,7 +5,10 @@
       "Bash(uv venv)",
       "Bash(uv sync --all-extras)",
       "Bash(uv sync)",
-      "Bash(uv run python scripts/seed.py)"
+      "Bash(uv run python scripts/seed.py)",
+      "Bash(uv run pytest -v)",
+      "Bash(.venv/Scripts/python.exe -m pytest -v)",
+      "Bash(.venv/Scripts/python.exe -c \"import fastapi; print\\(fastapi.__version__\\)\")"
     ]
   }
 }

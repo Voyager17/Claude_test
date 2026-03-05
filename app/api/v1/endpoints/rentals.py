@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -37,7 +37,7 @@ def create_rental(payload: RentalCreate, db: Session = Depends(get_db)):
     if movie.available_copies < 1:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="No copies available")
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     rental = Rental(
         customer_id=payload.customer_id,
         movie_id=payload.movie_id,
@@ -61,7 +61,7 @@ def return_rental(rental_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Already returned")
 
     rental.is_returned = True
-    rental.returned_at = datetime.utcnow()
+    rental.returned_at = datetime.now(UTC)
 
     movie = db.query(Movie).filter(Movie.id == rental.movie_id).first()
     if movie:
