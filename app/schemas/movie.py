@@ -14,6 +14,7 @@ class MovieBase(BaseModel):
     rating: float = Field(ge=0.0, le=10.0, default=0.0)
     rental_price_per_day: float = Field(gt=0)
     available_copies: int = Field(ge=0, default=1)
+    image_url: str | None = None
 
 
 class MovieCreate(MovieBase):
@@ -38,6 +39,7 @@ class MovieUpdate(BaseModel):
     rating: float | None = Field(default=None, ge=0.0, le=10.0)
     rental_price_per_day: float | None = Field(default=None, gt=0)
     available_copies: int | None = Field(default=None, ge=0)
+    image_url: str | None = None
 
 
 class MovieRead(MovieBase):

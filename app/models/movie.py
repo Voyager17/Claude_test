@@ -14,3 +14,4 @@ class Movie(Base):
     rental_price_per_day = Column(Float, nullable=False)
     available_copies = Column(Integer, default=1)
     is_active = Column(Boolean, default=True)
+    image_url = Column(String, nullable=True)
