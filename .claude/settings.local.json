@@ -8,7 +8,18 @@
       "Bash(uv run python scripts/seed.py)",
       "Bash(uv run pytest -v)",
       "Bash(.venv/Scripts/python.exe -m pytest -v)",
-      "Bash(.venv/Scripts/python.exe -c \"import fastapi; print\\(fastapi.__version__\\)\")"
+      "Bash(.venv/Scripts/python.exe -c \"import fastapi; print\\(fastapi.__version__\\)\")",
+      "Bash(uv run pytest)",
+      "Bash(ls -la d:/ai/rental.db*)",
+      "Bash(docker ps --format \"table {{.Names}}\\\\t{{.Status}}\\\\t{{.Ports}}\")",
+      "Bash(docker exec ai-api-1 ls -la /app/rental.db)",
+      "Bash(cmd /c \"docker exec ai-api-1 ls -la /app/rental.db\")",
+      "Bash(powershell -Command \"docker exec ai-api-1 ls /app/\")",
+      "Bash(powershell -Command \"docker exec ai-api-1 sh -c ''sqlite3 /app/rental.db \"\"SELECT COUNT\\(*\\) FROM customers\"\"''\")",
+      "Bash(powershell -Command \"docker exec ai-api-1 python -c ''import sqlite3; conn = sqlite3.connect\\(\"\"/app/rental.db\"\"\\); print\\(conn.execute\\(\"\"SELECT * FROM customers\"\"\\).fetchall\\(\\)\\)''\")",
+      "Bash(powershell -Command \"docker exec ai-api-1 python -c \"\"import sqlite3; c=sqlite3.connect\\(''/app/rental.db''\\); print\\(c.execute\\(''SELECT * FROM customers''\\).fetchall\\(\\)\\)\"\"\")",
+      "Bash(uv run pytest tests/customers/test_customers.py::TestCreateCustomer::test_success -v)",
+      "Bash(uv add psycopg2-binary)"
     ]
   }
 }
