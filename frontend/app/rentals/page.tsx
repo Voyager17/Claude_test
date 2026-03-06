@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 const API = "http://localhost:8001/api/v1";
 
@@ -29,6 +30,7 @@ function isOverdue(due: string, returned: boolean) {
 }
 
 export default function RentalsPage() {
+  const router = useRouter();
   const [rentals, setRentals] = useState<Rental[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -36,6 +38,12 @@ export default function RentalsPage() {
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("role") !== "admin") {
+      router.replace("/movies");
+    }
+  }, [router]);
 
   async function fetchAll() {
     const [r, m, c] = await Promise.all([

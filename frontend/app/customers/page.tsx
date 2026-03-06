@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 const API = "http://localhost:8001/api/v1";
 
@@ -19,11 +20,18 @@ function initials(name: string) {
 }
 
 export default function CustomersPage() {
+  const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("role") !== "admin") {
+      router.replace("/movies");
+    }
+  }, [router]);
 
   async function fetchCustomers() {
     const res = await fetch(`${API}/customers/`);

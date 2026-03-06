@@ -52,7 +52,12 @@ export default function MoviesPage() {
   const [sortField, setSortField] = useState<"title" | "rating" | "year">("title");
   const [sortAsc, setSortAsc] = useState(true);
   const [page, setPage] = useState(1);
+  const [isAdmin, setIsAdmin] = useState(false);
   const PAGE_SIZE = 10;
+
+  useEffect(() => {
+    setIsAdmin(localStorage.getItem("role") === "admin");
+  }, []);
 
   async function fetchMovies() {
     const res = await fetch(`${API}/movies/`);
@@ -114,16 +119,18 @@ export default function MoviesPage() {
               {sortField === field && <span className="text-xs">{sortAsc ? "↑" : "↓"}</span>}
             </button>
           ))}
-          <button
-            onClick={() => { setShowForm(!showForm); setError(""); }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              showForm
-                ? "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600"
-                : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
-            }`}
-          >
-            {showForm ? "Отмена" : "+ Добавить фильм"}
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => { setShowForm(!showForm); setError(""); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                showForm
+                  ? "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600"
+                  : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
+              }`}
+            >
+              {showForm ? "Отмена" : "+ Добавить фильм"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -135,7 +142,7 @@ export default function MoviesPage() {
       )}
 
       {/* Form */}
-      {showForm && (
+      {isAdmin && showForm && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6 mb-8">
           <h2 className="text-base font-semibold text-slate-800 dark:text-white mb-5">Новый фильм</h2>
           <form onSubmit={handleCreate} className="grid grid-cols-2 gap-4">
@@ -205,7 +212,7 @@ export default function MoviesPage() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {paged.map(m => (
-                <MovieCard key={m.id} movie={m} onDelete={handleDelete} />
+                <MovieCard key={m.id} movie={m} onDelete={handleDelete} isAdmin={isAdmin} />
               ))}
             </div>
             {totalPages > 1 && (
@@ -246,7 +253,7 @@ export default function MoviesPage() {
   );
 }
 
-function MovieCard({ movie: m, onDelete }: { movie: Movie; onDelete: (id: number) => void }) {
+function MovieCard({ movie: m, onDelete, isAdmin }: { movie: Movie; onDelete: (id: number) => void; isAdmin: boolean }) {
   const [confirming, setConfirming] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -302,19 +309,21 @@ function MovieCard({ movie: m, onDelete }: { movie: Movie; onDelete: (id: number
           </span>
         </div>
 
-        <div className="flex justify-end">
-          {confirming ? (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Удалить?</span>
-              <button onClick={() => onDelete(m.id)} className="text-xs font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">Да</button>
-              <button onClick={() => setConfirming(false)} className="text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">Нет</button>
-            </div>
-          ) : (
-            <button onClick={() => setConfirming(true)} className="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">
-              Удалить
-            </button>
-          )}
-        </div>
+        {isAdmin && (
+          <div className="flex justify-end">
+            {confirming ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-500 dark:text-slate-400">Удалить?</span>
+                <button onClick={() => onDelete(m.id)} className="text-xs font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">Да</button>
+                <button onClick={() => setConfirming(false)} className="text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">Нет</button>
+              </div>
+            ) : (
+              <button onClick={() => setConfirming(true)} className="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">
+                Удалить
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

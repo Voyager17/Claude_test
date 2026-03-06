@@ -19,7 +19,15 @@
       "Bash(powershell -Command \"docker exec ai-api-1 python -c ''import sqlite3; conn = sqlite3.connect\\(\"\"/app/rental.db\"\"\\); print\\(conn.execute\\(\"\"SELECT * FROM customers\"\"\\).fetchall\\(\\)\\)''\")",
       "Bash(powershell -Command \"docker exec ai-api-1 python -c \"\"import sqlite3; c=sqlite3.connect\\(''/app/rental.db''\\); print\\(c.execute\\(''SELECT * FROM customers''\\).fetchall\\(\\)\\)\"\"\")",
       "Bash(uv run pytest tests/customers/test_customers.py::TestCreateCustomer::test_success -v)",
-      "Bash(uv add psycopg2-binary)"
+      "Bash(uv add psycopg2-binary)",
+      "Bash(docker compose ps)",
+      "Bash(docker compose logs api --tail=50)",
+      "Bash(docker compose logs api --tail=30)",
+      "Bash(curl -s http://localhost:8001/api/v1/movies/)",
+      "Bash(curl -sv -H \"Origin: http://localhost:3000\" http://localhost:8001/api/v1/movies/)",
+      "Bash(curl -s -I -H \"Origin: http://localhost:3000\" http://localhost:8001/api/v1/movies/)",
+      "Bash(curl -s http://localhost:8001/health)",
+      "Bash(curl -s -H \"Origin: http://localhost:3000\" \"http://localhost:8001/api/v1/movies/\")"
     ]
   }
 }
