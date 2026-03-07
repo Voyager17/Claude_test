@@ -2,6 +2,7 @@
 
 import { useState, useEffect, type ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const API = "http://localhost:8001/api/v1";
 
@@ -16,6 +17,7 @@ interface Movie {
   available_copies: number;
   is_active: boolean;
   image_url: string | null;
+  description: string | null;
 }
 
 const emptyForm = {
@@ -27,6 +29,7 @@ const emptyForm = {
   rental_price_per_day: 1,
   available_copies: 1,
   image_url: "",
+  description: "",
 };
 
 const genreGradients: Record<string, string> = {
@@ -71,7 +74,7 @@ export default function MoviesPage() {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const body = { ...form, image_url: form.image_url || null };
+    const body = { ...form, image_url: form.image_url || null, description: form.description || null };
     const res = await fetch(`${API}/movies/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -199,6 +202,9 @@ export default function MoviesPage() {
             </Field>
             <Field label="Ссылка на постер (необязательно)">
               <input className={inp} placeholder="https://..." value={form.image_url} onChange={e => setForm({ ...form, image_url: e.target.value })} />
+            </Field>
+            <Field label="Описание (необязательно)">
+              <textarea rows={3} className={inp} placeholder="Краткое описание фильма..." value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
             </Field>
             <div className="col-span-2 flex justify-end pt-2">
               <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
@@ -337,9 +343,9 @@ function MovieCard({ movie: m, onDelete, isAdmin, isSelected, onSelect }: {
       </div>
 
       {/* Info */}
-      <div className="p-4 flex flex-col gap-2 flex-1">
-        <h3 className="font-bold text-slate-900 dark:text-white leading-tight">{m.title}</h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400">{m.director} · {m.year}</p>
+      <div className="p-4 flex flex-col gap-2 h-52">
+        <h3 className="font-bold text-slate-900 dark:text-white leading-tight line-clamp-2 min-h-[2.5rem]">{m.title}</h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{m.director} · {m.year}</p>
 
         <div className="flex items-center gap-1">
           <span className="text-amber-400 text-sm">★</span>
@@ -361,8 +367,15 @@ function MovieCard({ movie: m, onDelete, isAdmin, isSelected, onSelect }: {
           </span>
         </div>
 
-        {isAdmin && (
-          <div className="flex justify-end" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between" onClick={e => e.stopPropagation()}>
+          <Link
+            href={`/movies/${m.id}`}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-xs font-semibold transition-colors"
+          >
+            Подробнее →
+          </Link>
+          {isAdmin && (
+            <div>
             {confirming ? (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-500 dark:text-slate-400">Удалить?</span>
@@ -375,7 +388,8 @@ function MovieCard({ movie: m, onDelete, isAdmin, isSelected, onSelect }: {
               </button>
             )}
           </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

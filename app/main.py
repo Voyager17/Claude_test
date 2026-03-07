@@ -16,6 +16,7 @@ async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
     with engine.connect() as conn:
         conn.execute(text("ALTER TABLE movies ADD COLUMN IF NOT EXISTS image_url VARCHAR"))
+        conn.execute(text("ALTER TABLE movies ADD COLUMN IF NOT EXISTS description VARCHAR"))
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR NOT NULL DEFAULT 'user'"))
         conn.commit()
     yield
