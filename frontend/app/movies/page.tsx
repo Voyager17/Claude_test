@@ -24,7 +24,7 @@ const emptyForm = {
   year: new Date().getFullYear(),
   genre: "",
   rating: 0,
-  rental_price_per_day: 0,
+  rental_price_per_day: 1,
   available_copies: 1,
   image_url: "",
 };
@@ -53,6 +53,7 @@ export default function MoviesPage() {
   const [sortAsc, setSortAsc] = useState(true);
   const [page, setPage] = useState(1);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const PAGE_SIZE = 10;
 
   useEffect(() => {
@@ -82,7 +83,12 @@ export default function MoviesPage() {
       fetchMovies();
     } else {
       const data = await res.json();
-      setError(data.detail ?? "Ошибка при создании");
+      const detail = data.detail;
+      setError(
+        typeof detail === "string" ? detail
+        : Array.isArray(detail) ? detail.map((e: { msg: string }) => e.msg).join("; ")
+        : "Ошибка при создании"
+      );
     }
   }
 
@@ -91,11 +97,35 @@ export default function MoviesPage() {
     fetchMovies();
   }
 
+  const selectedMovie = movies.find(m => m.id === selectedId) ?? null;
+
   return (
     <div>
+      {/* Blurred background */}
+      {selectedMovie && (
+        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+          {selectedMovie.image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={selectedMovie.image_url}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{ filter: "blur(15px) brightness(0.5)", transform: "scale(1.15)" }}
+            />
+          ) : (
+            <div
+              className={`w-full h-full bg-gradient-to-br ${posterGradient(selectedMovie.genre)}`}
+              style={{ filter: "blur(15px) brightness(0.55)", transform: "scale(1.15)" }}
+            />
+          )}
+        </div>
+      )}
+
+      <div className="relative z-10">
+
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <div>
+        <div className="bg-white/75 dark:bg-slate-900/75 backdrop-blur-sm rounded-xl px-4 py-2">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Фильмы</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
             {movies.length > 0 ? `${movies.length} фильм${plural(movies.length)}` : ""}
@@ -212,7 +242,14 @@ export default function MoviesPage() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {paged.map(m => (
-                <MovieCard key={m.id} movie={m} onDelete={handleDelete} isAdmin={isAdmin} />
+                <MovieCard
+                  key={m.id}
+                  movie={m}
+                  onDelete={handleDelete}
+                  isAdmin={isAdmin}
+                  isSelected={m.id === selectedId}
+                  onSelect={() => setSelectedId(prev => prev === m.id ? null : m.id)}
+                />
               ))}
             </div>
             {totalPages > 1 && (
@@ -249,18 +286,33 @@ export default function MoviesPage() {
           </>
         );
       })()}
+
+      </div>
     </div>
   );
 }
 
-function MovieCard({ movie: m, onDelete, isAdmin }: { movie: Movie; onDelete: (id: number) => void; isAdmin: boolean }) {
+function MovieCard({ movie: m, onDelete, isAdmin, isSelected, onSelect }: {
+  movie: Movie;
+  onDelete: (id: number) => void;
+  isAdmin: boolean;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
   const [confirming, setConfirming] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   const showImage = m.image_url && !imgError;
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+    <div
+      onClick={onSelect}
+      className={`relative z-10 bg-white dark:bg-slate-900 rounded-xl border shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all cursor-pointer ${
+        isSelected
+          ? "border-blue-500 ring-2 ring-blue-500 shadow-blue-500/20 shadow-lg"
+          : "border-slate-100 dark:border-slate-800"
+      }`}
+    >
       {/* Poster */}
       <div className="relative bg-slate-900 shrink-0" style={{ aspectRatio: "2/3" }}>
         {showImage ? (
@@ -310,7 +362,7 @@ function MovieCard({ movie: m, onDelete, isAdmin }: { movie: Movie; onDelete: (i
         </div>
 
         {isAdmin && (
-          <div className="flex justify-end">
+          <div className="flex justify-end" onClick={e => e.stopPropagation()}>
             {confirming ? (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-500 dark:text-slate-400">Удалить?</span>

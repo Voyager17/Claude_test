@@ -13,7 +13,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   return (
     <>
       <NavBar />
-      <main className="max-w-7xl mx-auto px-6 py-8">{children}</main>
+      <main className="relative z-10 max-w-7xl mx-auto px-6 py-8">{children}</main>
     </>
   );
 }

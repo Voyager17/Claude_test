@@ -8,6 +8,7 @@ from tests.urls import MovieURLs
 class TestCreateMovie:
     def test_success(self, client: httpx.Client, db_cleanup: list):
         payload = MovieCreate.rand_init()
+        payload.rental_price_per_day = 0
         response = client.post(MovieURLs.base, json=payload.model_dump())
 
         assert response.status_code == StatusCode.CREATED

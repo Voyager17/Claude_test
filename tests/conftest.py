@@ -33,8 +33,10 @@ def client() -> Iterator[httpx.Client]:
 
 
 @pytest.fixture
-def db_queries() -> DBQueries:
-    return DBQueries(TestingSessionLocal)
+def db_queries() -> Iterator[DBQueries]:
+    q = DBQueries(TestingSessionLocal)
+    yield q
+    q.close()
 
 
 @pytest.fixture

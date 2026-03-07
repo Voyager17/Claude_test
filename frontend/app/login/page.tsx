@@ -47,7 +47,12 @@ export default function LoginPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.detail ?? "Ошибка при регистрации");
+        const detail = data.detail;
+        setError(
+          typeof detail === "string" ? detail
+          : Array.isArray(detail) ? detail.map((e: { msg: string }) => e.msg).join("; ")
+          : "Ошибка при регистрации"
+        );
         setLoading(false);
         return;
       }

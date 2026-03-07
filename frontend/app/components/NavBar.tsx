@@ -32,7 +32,10 @@ export default function NavBar() {
   function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
-    router.replace("/login");
+    localStorage.removeItem("role");
+    setEmail("");
+    setRole("");
+    router.replace("/movies");
   }
 
   function toggleTheme() {
@@ -48,7 +51,7 @@ export default function NavBar() {
   }
 
   return (
-    <nav className="bg-slate-900 border-b border-slate-800">
+    <nav className="relative z-50 bg-slate-900 border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-6 py-0 flex items-center gap-10">
         <span className="text-white font-bold text-lg tracking-tight py-4 shrink-0">
           VideoRent
