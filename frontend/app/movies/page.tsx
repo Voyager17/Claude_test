@@ -60,7 +60,10 @@ export default function MoviesPage() {
   const PAGE_SIZE = 10;
 
   useEffect(() => {
-    setIsAdmin(localStorage.getItem("role") === "admin");
+    const checkAdmin = () => setIsAdmin(localStorage.getItem("role") === "admin");
+    checkAdmin();
+    window.addEventListener("auth-change", checkAdmin);
+    return () => window.removeEventListener("auth-change", checkAdmin);
   }, []);
 
   async function fetchMovies() {

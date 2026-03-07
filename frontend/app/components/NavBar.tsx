@@ -35,6 +35,7 @@ export default function NavBar() {
     localStorage.removeItem("role");
     setEmail("");
     setRole("");
+    window.dispatchEvent(new Event("auth-change"));
     router.replace("/movies");
   }
 
